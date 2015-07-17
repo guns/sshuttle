@@ -2,6 +2,7 @@ import sys, os, re
 import helpers, options, client, server, firewall, hostwatch
 import compat.ssubprocess as ssubprocess
 from helpers import *
+from setproctitle import setproctitle
 
 
 # list of:
@@ -89,6 +90,8 @@ if opt.wrap:
     import ssnet
     ssnet.MAX_CHANNEL = int(opt.wrap)
 helpers.verbose = opt.verbose
+
+setproctitle("sshuttle")
 
 try:
     if opt.server:
