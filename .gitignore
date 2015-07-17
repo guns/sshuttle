@@ -4,3 +4,6 @@
 /.do_built
 /.do_built.dir
 /.redo
+/pkg/
+/src/
+/*.pkg.tar.xz*
