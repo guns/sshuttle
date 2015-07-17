@@ -11,7 +11,12 @@ def parse_subnets(subnets_str):
     for s in subnets_str:
         m = re.match(r'(\d+)(?:\.(\d+)\.(\d+)\.(\d+))?(?:/(\d+))?$', s)
         if not m:
-            raise Fatal('%r is not a valid IP subnet format' % s)
+            m = re.match(r'^set:(.*)', s)
+            if m:
+                subnets.append((m.groups()[0], -1))
+                continue
+            else:
+                raise Fatal('%r is not a valid IP subnet format' % s)
         (a,b,c,d,width) = m.groups()
         (a,b,c,d) = (int(a or 0), int(b or 0), int(c or 0), int(d or 0))
         if width == None:
@@ -45,9 +50,9 @@ def parse_ipport(s):
 
 
 optspec = """
-sshuttle [-l [ip:]port] [-r [username@]sshserver[:port]] <subnets...>
+sshuttle [-l [ip:]port] [-r [username@]sshserver[:port]] <subnets|set:IPSET...>
 sshuttle --server
-sshuttle --firewall <port> <subnets...>
+sshuttle --firewall <port> <subnets|set:IPSET...>
 sshuttle --hostwatch
 --
 l,listen=  transproxy to this ip address and port number [127.0.0.1:0]

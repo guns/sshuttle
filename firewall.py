@@ -93,15 +93,26 @@ def do_iptables(port, dnsport, subnets):
         # excludes to come first.  That's why the columns are in such a non-
         # intuitive order.
         for swidth,sexclude,snet in sorted(subnets, reverse=True):
-            if sexclude:
-                ipt('-A', chain, '-j', 'RETURN',
-                    '--dest', '%s/%s' % (snet,swidth),
-                    '-p', 'tcp')
+            if swidth == -1:
+                if sexclude:
+                    ipt('-A', chain, '-j', 'RETURN',
+                        '--match', 'set', '--match-set', snet, 'dst',
+                        '-p', 'tcp')
+                else:
+                    ipt_ttl('-A', chain, '-j', 'REDIRECT',
+                            '--match', 'set', '--match-set', snet, 'dst',
+                            '-p', 'tcp',
+                            '--to-ports', str(port))
             else:
-                ipt_ttl('-A', chain, '-j', 'REDIRECT',
+                if sexclude:
+                    ipt('-A', chain, '-j', 'RETURN',
                         '--dest', '%s/%s' % (snet,swidth),
-                        '-p', 'tcp',
-                        '--to-ports', str(port))
+                        '-p', 'tcp')
+                else:
+                    ipt_ttl('-A', chain, '-j', 'REDIRECT',
+                            '--dest', '%s/%s' % (snet,swidth),
+                            '-p', 'tcp',
+                            '--to-ports', str(port))
                 
     if dnsport:
         nslist = resolvconf_nameservers()
