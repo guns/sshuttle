@@ -29,7 +29,7 @@ def _call(argv):
 
 
 def ipt_chain_exists(name):
-    argv = ['iptables', '-t', 'nat', '-nL']
+    argv = ['iptables', '--wait', '-t', 'nat', '-nL']
     p = ssubprocess.Popen(argv, stdout = ssubprocess.PIPE)
     for line in p.stdout:
         if line.startswith('Chain %s ' % name):
@@ -40,7 +40,7 @@ def ipt_chain_exists(name):
 
 
 def ipt(*args):
-    argv = ['iptables', '-t', 'nat'] + list(args)
+    argv = ['iptables', '--wait', '-t', 'nat'] + list(args)
     _call(argv)
 
 
